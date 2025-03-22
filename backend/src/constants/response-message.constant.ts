@@ -23,5 +23,12 @@ export const HttpResponse = {
   SAME_USERNAME: "Cannot change to old username",
   RESOURCE_FOUND: "Resource found.",
   RESOURCE_UPDATED: "Resource updated.",
-  PROFILE_PICTURE_CHANGED: "Profile picture changed successfully"
+  PROFILE_PICTURE_CHANGED: "Profile picture changed successfully",
+
+  BLOG_NOT_FOUND: "Blog not found",
+  INVALID_ID: "Invalid ID format",
+  REQUIRED_AUTHOR_ID: "Author ID is required",
+  REQUIRED_AUTHOR_NAME: "Author name is required",
+  REQUIRED_TITLE: "Blog title is required",
+  REQUIRED_CONTENT: "Blog content is required",
 };

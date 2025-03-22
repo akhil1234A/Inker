@@ -83,7 +83,7 @@ export const isCloudinaryUrl = (url: string): boolean => {
 
 export const deleteFromCloudinary = (publicId: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.destroy(publicId, (error, result) => {
+    cloudinary.uploader.destroy(publicId, (error) => {
       if (error) return reject(error);
       resolve();
     });

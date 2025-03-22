@@ -1,6 +1,4 @@
-
-import { transporter } from "@/configs/mail.config";
-
+import { transporter } from "@/configs";
 import { env } from "../configs/env.config";
 
 export const sendOtpEmail = async (email: string, otp: string) => {
@@ -42,16 +40,13 @@ export const sendResetPasswordEmail = async (email: string, token: string) => {
                 <p>If you did not request this, you can ignore this email.</p><br />
                 <p>~ Inker</p>
             
-            `
+            `,
     };
 
     const info = await transporter.sendMail(mailOptions);
     console.log("Password reset email sent successfully", info.response);
   } catch (error) {
-    console.error("Error sendResetPasswordEmail",error);
+    console.error("Error sendResetPasswordEmail", error);
     throw new Error("Error sending reset pass email");
   }
 };
-
-
-
