@@ -16,6 +16,7 @@ const initialState: BlogEditorState = {
   error: null,
   editingBlogId: null,
   tags: [],
+  currentBlog: null,
 };
 
 interface SaveBlogPayload {
@@ -35,7 +36,11 @@ export const saveBlog = createAsyncThunk(
   "blogEditor/saveBlog",
   async ({ title, content, tags, editingBlogId }: SaveBlogPayload, { rejectWithValue }) => {
     try {
-      const blogData = { title, content, tags };
+      const blogData = { 
+        title, 
+        content, 
+        tags: JSON.stringify(tags) // Convert array to string for API
+      };
       if (editingBlogId) {
         await blogService.editBlogService({ ...blogData, blogId: editingBlogId });
       } else {
@@ -192,12 +197,15 @@ export const blogSlice = createSlice({
           content: action.payload.content,
           author: "Current User",
           authorId: "user-1",
+          authorName: "Current User",
           tags: action.payload.tags,
-          thumbnail: null, // No thumbnail in current setup
+          thumbnail: null,
           attachments: [],
           attachmentUrls: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          likes: 0,
+          comments: 0
         };
         if (action.payload.editingBlogId) {
           const index = state.blogs.findIndex(b => b._id === action.payload.editingBlogId);
@@ -219,7 +227,7 @@ export const blogSlice = createSlice({
       })
       .addCase(getBlogs.fulfilled, (state, action: PayloadAction<Blog[]>) => {
         state.loading = false;
-        state.blogs = action.payload; // Replace blogs with fetched data
+        state.blogs = action.payload; 
       })
       .addCase(getBlogs.rejected, (state, action) => {
         state.loading = false;

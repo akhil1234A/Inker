@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "@/store/store";
 import MDEditor from "@uiw/react-md-editor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getBlogById } from "@/store/slices/blogSlice"; // Import new thunk
+import { getBlogById } from "@/store/slices/blogSlice"; 
 import { Pencil, ArrowLeft } from "lucide-react";
 
 export default function ViewBlog() {

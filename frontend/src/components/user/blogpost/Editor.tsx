@@ -66,7 +66,7 @@ export const Editor: React.FC<EditorProps> = ({ isEditMode }) => {
           {tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="flex items-center gap-1">
               {tag}
-              <button onClick={() => dispatch(removeTag(tag))} className="ml-1 hover:text-destructive">
+              <button title="Remove tag" onClick={() => dispatch(removeTag(tag))} className="ml-1 hover:text-destructive">
                 <X className="h-3 w-3" />
               </button>
             </Badge>

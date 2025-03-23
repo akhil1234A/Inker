@@ -16,20 +16,17 @@ export const ThumbnailUploader: React.FC = () => {
 
   useEffect(() => {
     if (thumbnail) {
-      const objectUrl = URL.createObjectURL(thumbnail);
-      setThumbnailUrl(objectUrl);
-      return () => {
-        URL.revokeObjectURL(objectUrl); // Clean up the object URL when thumbnail changes or component unmounts
-      };
+      setThumbnailUrl(thumbnail.url);
     } else {
-      setThumbnailUrl(null); // Clear the URL when thumbnail is null
+      setThumbnailUrl(null);
     }
   }, [thumbnail]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      dispatch(setThumbnail(file));
+      const url = URL.createObjectURL(file);
+      dispatch(setThumbnail({ name: file.name, url }));
     }
   }, [dispatch]);
 

@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/store/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getBlogs, deleteBlog } from "@/store/slices/blogSlice";
 import { useNavigate } from "react-router-dom";
-import { Pencil, Trash2, Eye } from "lucide-react"; // Icons for Edit, Delete, View
+import { Pencil, Trash2, Eye } from "lucide-react"; 
 import { Badge } from "@/components/ui/badge";
 
 export default function BlogListCards() {
@@ -18,7 +18,7 @@ export default function BlogListCards() {
   }, [dispatch]);
 
   const handleDelete = (blogId: string) => {
-    dispatch(deleteBlog({ blogId, authorId: "user-1" })); // Adjust authorId based on auth
+    dispatch(deleteBlog({ blogId, authorId: "user-1" })); 
   };
 
   const fallbackThumbnail = "https://tse1.mm.bing.net/th?id=OIP.kkJ4tBMv2tT9OqxmUWlQFgHaEK&pid=Api&P=0&h=180";
@@ -57,7 +57,7 @@ export default function BlogListCards() {
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
                   By {blog.authorName || "Unknown Author"} |{" "}
-                  {blog.created_at ? new Date(blog.created_at).toLocaleDateString() : "Date Unknown"}
+                  {blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : "Date Unknown"}
                 </p>
               </CardHeader>
               <CardContent className="pt-0">
@@ -77,10 +77,10 @@ export default function BlogListCards() {
                   </div>
                   <div className="text-sm text-muted-foreground">
                     <p>ID: {blog._id || "N/A"}</p>
-                    <p>Likes: {blog.likes ?? 0}</p>
-                    <p>Comments: {blog.comments ?? 0}</p>
+                    <p>Likes: {blog.likes}</p>
+                    <p>Comments: {blog.comments}</p>
                     <p>
-                      Updated: {blog.updated_at ? new Date(blog.updated_at).toLocaleDateString() : "N/A"}
+                      Updated: {blog.updatedAt ? new Date(blog.updatedAt).toLocaleDateString() : "N/A"}
                     </p>
                   </div>
                 </div>

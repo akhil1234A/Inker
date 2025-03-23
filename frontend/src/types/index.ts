@@ -7,6 +7,7 @@ export interface Blog {
   content: string;
   author: string;
   authorId: string;
+  authorName: string;
   tags: string[];
   thumbnail: { type: string; url: string } | null;
   attachments: Array<{
@@ -16,6 +17,8 @@ export interface Blog {
   attachmentUrls: string[];
   createdAt: string;
   updatedAt: string;
+  likes: number;
+  comments: number;
 }
 
 export interface BlogEditorState {

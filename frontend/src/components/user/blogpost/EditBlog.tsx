@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "@/store/store";
@@ -21,7 +21,7 @@ export default function EditBlog() {
       if (blog) {
         dispatch(editBlog(blog));
       } else {
-        navigate("/blog/"); // Redirect if blog not found
+        navigate("/blog/"); 
       }
     }
   }, [dispatch, blogId, blogs, navigate]);
