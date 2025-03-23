@@ -9,11 +9,11 @@ const blogSchema = new Schema<IBlogModel>(
     authorId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     authorName: {
       type: String,
-      required: true,
+      required: false,
     },
     title: {
       type: String,

@@ -6,6 +6,7 @@ import { HttpStatus } from "@/constants";
 import { CreateBlogRequestType } from "@/schema/create-blog.schema";
 import { EditBlogRequestType } from "@/schema";
 
+
 export class BlogController implements IBlogController {
   constructor(private blogService: IBlogService) {}
 
@@ -15,11 +16,20 @@ export class BlogController implements IBlogController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const blogData = req.body as CreateBlogRequestType;
+      const { title, content, tags } = req.body as { title: string; content: string; tags: string[] };
+      // const blogData = req.body as CreateBlogRequestType;
       const { id } = JSON.parse(req.headers["x-user-payload"] as string);
+      // console.log(id)
+      // const createdBlog = await this.blogService.createBlog({
+      //   ...blogData,
+      //   authorId: id,
+      // });
       const createdBlog = await this.blogService.createBlog({
-        ...blogData,
-        authorId: id,
+        title,
+        content, 
+        tags,
+        authorId: id || new Types.ObjectId(),
+        authorName: "Akhilanwarm",
       });
       res.status(HttpStatus.CREATED).json(createdBlog);
     } catch (error) {
@@ -60,9 +70,16 @@ export class BlogController implements IBlogController {
     next: NextFunction
   ): Promise<void> {
     try {
+      console.log(req.params)
       const blogId = new Types.ObjectId(req.params.id);
-      const updateData = req.body as EditBlogRequestType;
-      const updatedBlog = await this.blogService.updateBlog(blogId, updateData);
+      // const updateData = req.body as EditBlogRequestType;
+      // const updatedBlog = await this.blogService.updateBlog(blogId, updateData);
+    const { title, content, tags } = req.body as { title: string; content: string; tags: string[] };
+    const updatedBlog = await this.blogService.updateBlog(blogId, {
+      title,
+      content,
+      tags,
+    });
 
       res.status(HttpStatus.OK).json(updatedBlog);
     } catch (error) {

@@ -16,7 +16,7 @@ const blogController = new BlogController(blogService);
 
 router.post(
   "/",
-  validate(createBlogSchema),
+  // validate(createBlogSchema),
   authenticate("user"),
   blogController.createBlog.bind(blogController)
 );
@@ -35,7 +35,7 @@ router.get(
 
 router.put(
   "/:id",
-  validate(editBlogSchema),
+  // validate(editBlogSchema),
   authenticate("user"),
   blogController.updateBlog.bind(blogController)
 );
