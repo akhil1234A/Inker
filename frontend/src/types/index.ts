@@ -27,6 +27,7 @@ export interface BlogEditorState {
     name: string;
     url: string;
   };
+  currentBlog: Blog | null;
   attachments: Array<{
     name: string;
     url: string;

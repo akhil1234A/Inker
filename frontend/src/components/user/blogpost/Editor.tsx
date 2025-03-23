@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { ThumbnailUploader } from "./ThumbnailUploader";
 import { setTitle, setContent, addTag, removeTag, saveBlog } from "@/store/slices/blogSlice";
 import type { RootState, AppDispatch } from "@/store/store";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +17,9 @@ interface EditorProps {
 
 export const Editor: React.FC<EditorProps> = ({ isEditMode }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { title, content, editingBlogId, tags, loading } = useSelector((state: RootState) => state.blogEditor);
+  const { title, content, editingBlogId, tags, loading } = useSelector(
+    (state: RootState) => state.blogEditor
+  );
   const [newTag, setNewTag] = useState("");
   const navigate = useNavigate();
 
@@ -33,12 +36,13 @@ export const Editor: React.FC<EditorProps> = ({ isEditMode }) => {
 
   const handleSave = () => {
     dispatch(saveBlog({ title, content, tags, editingBlogId })).then(() => {
-      navigate("/blog/"); // Redirect to blog list after save
+      navigate("/blog/"); // Redirect to blog list
     });
   };
 
   return (
     <div data-color-mode="dark">
+      <ThumbnailUploader />
       <div className="relative">
         <Input
           value={title}

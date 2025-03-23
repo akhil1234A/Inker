@@ -56,7 +56,7 @@ export const getBlogs = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await blogService.getAllBlogsService();
-      return response; // Expecting an array of Blog objects
+      return response; 
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -78,6 +78,21 @@ export const deleteBlog = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue("Failed to delete blog");
+    }
+  }
+);
+
+export const getBlogById = createAsyncThunk(
+  "blogEditor/getBlogById",
+  async (blogId: string, { rejectWithValue }) => {
+    try {
+      const response = await blogService.getBlogByIdService(blogId);
+      return response;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to fetch blog");
     }
   }
 );
@@ -219,6 +234,18 @@ export const blogSlice = createSlice({
         state.blogs = state.blogs.filter((blog) => blog._id !== action.payload);
       })
       .addCase(deleteBlog.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(getBlogById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBlogById.fulfilled, (state, action: PayloadAction<Blog>) => {
+        state.loading = false;
+        state.currentBlog = action.payload; 
+      })
+      .addCase(getBlogById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

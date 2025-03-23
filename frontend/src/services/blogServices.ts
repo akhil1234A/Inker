@@ -48,4 +48,8 @@ export const blogService = {
       throw new Error(err.response?.data?.error || "Failed to fetch blogs");
     }
   },
+  getBlogByIdService: async (blogId: string): Promise<Blog> => {
+    const response = await axiosInstance.get<Blog>(`/api/blog/${blogId}`);
+    return response.data;
+  }
 };
