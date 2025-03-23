@@ -21,8 +21,6 @@ const initialState: BlogEditorState = {
 interface SaveBlogPayload {
   title: string;
   content: string;
-  thumbnail: File | null;
-  attachments: File[];
   tags: string[];
   editingBlogId: string | null;
 }
@@ -30,47 +28,35 @@ interface SaveBlogPayload {
 // Thunks
 export const saveBlog = createAsyncThunk(
   "blogEditor/saveBlog",
-  async ({ title, content, thumbnail, attachments, tags, editingBlogId }: SaveBlogPayload, { rejectWithValue }) => {
+  async ({ title, content, tags, editingBlogId }: SaveBlogPayload, { rejectWithValue }) => {
     try {
-      // Create FormData for file uploads
-      const formData = new FormData();
-      if (thumbnail) formData.append("thumbnail", thumbnail);
-      attachments.forEach((file, index) => {
-        formData.append(`attachment${index}`, file);
-      });
-
-      // Add other data
-      formData.append("title", title);
-      formData.append("content", content);
-      formData.append("tags", JSON.stringify(tags));
-
-      console.log('formData', formData.content);
-
+      const blogData = { title, content, tags };
       if (editingBlogId) {
-        await blogService.editBlogService(formData);
+        await blogService.editBlogService({ ...blogData, blogId: editingBlogId });
       } else {
-        await blogService.createBlogService(formData);
+        await blogService.createBlogService(blogData);
       }
-
-      return { 
-        title, 
-        content,
-        thumbnailData: thumbnail ? {
-          url: URL.createObjectURL(thumbnail),
-          name: thumbnail.name
-        } : null,
-        attachmentData: attachments.map(file => ({
-          url: URL.createObjectURL(file),
-          name: file.name
-        })),
-        tags,
-        editingBlogId 
-      };
+      return { title, content, tags, editingBlogId };
     } catch (error: unknown) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
       return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const getBlogs = createAsyncThunk(
+  "blogEditor/getBlogs",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await blogService.getAllBlogsService();
+      return response; // Expecting an array of Blog objects
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to fetch blogs");
     }
   }
 );
@@ -122,10 +108,7 @@ export const blogSlice = createSlice({
       state.saved = false;
     },
     addAttachment: (state, action: PayloadAction<{ url: string; name: string }>) => {
-      state.attachments.push({
-        url: action.payload.url,
-        name: action.payload.name
-      });
+      state.attachments.push({ url: action.payload.url, name: action.payload.name });
       state.attachmentUrls.push(action.payload.url);
       state.saved = false;
     },
@@ -144,7 +127,7 @@ export const blogSlice = createSlice({
       state.saved = false;
       state.editingBlogId = null;
     },
-    setSaved: (state, action: PayloadAction<boolean>) => { 
+    setSaved: (state, action: PayloadAction<boolean>) => {
       state.saved = action.payload;
     },
     addTag: (state, action: PayloadAction<string>) => {
@@ -174,13 +157,12 @@ export const blogSlice = createSlice({
           author: "Current User",
           authorId: "user-1",
           tags: action.payload.tags,
-          thumbnail: action.payload.thumbnailData,
-          attachments: action.payload.attachmentData,
-          attachmentUrls: action.payload.attachmentData.map(att => att.url),
+          thumbnail: null, // No thumbnail in current setup
+          attachments: [],
+          attachmentUrls: [],
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
-
         if (action.payload.editingBlogId) {
           const index = state.blogs.findIndex(b => b._id === action.payload.editingBlogId);
           if (index !== -1) {
@@ -194,10 +176,20 @@ export const blogSlice = createSlice({
       .addCase(saveBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        state.attachments = [];
-        state.thumbnail = null;
+      })
+      .addCase(getBlogs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBlogs.fulfilled, (state, action: PayloadAction<Blog[]>) => {
+        state.loading = false;
+        state.blogs = action.payload; // Replace blogs with fetched data
+      })
+      .addCase(getBlogs.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
-  }
+  },
 });
 
 export const {

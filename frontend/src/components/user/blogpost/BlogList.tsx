@@ -1,15 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "@/store/store";
+import type { RootState, AppDispatch } from "@/store/store";
 import MDEditor from "@uiw/react-md-editor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { editBlog } from "@/store/slices/blogSlice";
+import { editBlog, getBlogs } from "@/store/slices/blogSlice";
 
 export const BlogList: React.FC = () => {
-  const dispatch = useDispatch();
-  const blogs = useSelector((state: RootState) => state.blogEditor.blogs);
+  const dispatch = useDispatch<AppDispatch>();
+  const { blogs, loading, error } = useSelector((state: RootState) => state.blogEditor);
+
+  console.log("Blogs:", blogs);
+
+  useEffect(() => {
+    dispatch(getBlogs()); // Fetch blogs on mount
+  }, [dispatch]);
+
+  if (loading) {
+    return <p className="text-muted-foreground text-center">Loading blogs...</p>;
+  }
+
+  if (error) {
+    return <p className="text-destructive text-center">Error: {error}</p>;
+  }
 
   return (
     <div className="space-y-6">
@@ -30,12 +44,25 @@ export const BlogList: React.FC = () => {
             </CardHeader>
             <CardContent>
               <MDEditor.Markdown source={blog.content} className="bg-background text-foreground" />
-              {blog.attachments.length > 0 && (
+              {(blog.attachments?.length > 0 || blog.attachmentUrls?.length > 0) && (
                 <>
                   <Separator className="my-4" />
                   <div className="flex flex-wrap gap-2">
-                    {blog.attachmentUrls.map((url, i) => (
-                      <img key={i} src={url} alt={`Attachment ${i + 1}`} className="h-20 w-20 object-cover rounded-md border border-border" />
+                    {(blog.attachments || []).map((att, i) => (
+                      <img
+                        key={i}
+                        src={att.url}
+                        alt={`Attachment ${i + 1}`}
+                        className="h-20 w-20 object-cover rounded-md border border-border"
+                      />
+                    ))}
+                    {(blog.attachmentUrls || []).map((url, i) => (
+                      <img
+                        key={i}
+                        src={url}
+                        alt={`Attachment URL ${i + 1}`}
+                        className="h-20 w-20 object-cover rounded-md border border-border"
+                      />
                     ))}
                   </div>
                 </>
