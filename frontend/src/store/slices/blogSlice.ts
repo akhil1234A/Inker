@@ -25,6 +25,11 @@ interface SaveBlogPayload {
   editingBlogId: string | null;
 }
 
+interface DeleteBlogPayload {
+  blogId: string;
+  authorId: string;
+}
+
 // Thunks
 export const saveBlog = createAsyncThunk(
   "blogEditor/saveBlog",
@@ -57,6 +62,22 @@ export const getBlogs = createAsyncThunk(
         return rejectWithValue(error.message);
       }
       return rejectWithValue("Failed to fetch blogs");
+    }
+  }
+);
+
+
+export const deleteBlog = createAsyncThunk(
+  "blogEditor/deleteBlog",
+  async ({ blogId, authorId }: DeleteBlogPayload, { rejectWithValue }) => {
+    try {
+      await blogService.deleteBlogService({ blogId, authorId });
+      return blogId;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to delete blog");
     }
   }
 );
@@ -186,6 +207,18 @@ export const blogSlice = createSlice({
         state.blogs = action.payload; // Replace blogs with fetched data
       })
       .addCase(getBlogs.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(deleteBlog.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteBlog.fulfilled, (state, action: PayloadAction<string>) => {
+        state.loading = false;
+        state.blogs = state.blogs.filter((blog) => blog._id !== action.payload);
+      })
+      .addCase(deleteBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
